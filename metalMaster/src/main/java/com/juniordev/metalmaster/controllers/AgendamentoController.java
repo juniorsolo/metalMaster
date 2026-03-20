@@ -10,54 +10,44 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.juniordev.metalmaster.dto.ClientRequestDto;
-import com.juniordev.metalmaster.dto.ClientResponseDto;
-import com.juniordev.metalmaster.service.ClienteService;
+import com.juniordev.metalmaster.dto.AgendamentoRequestDTO;
+import com.juniordev.metalmaster.dto.AgendamentoResponseDTO;
+import com.juniordev.metalmaster.service.AgendamentoService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/clientes/{clienteId}/agendamentos")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class ClientController {
+public class AgendamentoController {
 
 	@Autowired
-	ClienteService service;
+	AgendamentoService service;
 
 	@GetMapping
-	public ResponseEntity<List<ClientResponseDto>> listarTodos() {
-		List<ClientResponseDto> list = service.listarTodos().stream().map(ClientResponseDto::new).toList();
+	public ResponseEntity<List<AgendamentoResponseDTO>> listar(@PathVariable Long clienteId) {
+		List<AgendamentoResponseDTO> list = service.listarPorCliente(clienteId).stream()
+				.map(AgendamentoResponseDTO::new).toList();
 		return ResponseEntity.ok(list);
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<ClientResponseDto> buscarPorId(@PathVariable Long id) {
-		return ResponseEntity.ok(new ClientResponseDto(service.buscarPorId(id)));
-	}
-
 	@PostMapping
-	public ResponseEntity<ClientResponseDto> criar(@Valid @RequestBody ClientRequestDto dto) {
-		ClientResponseDto response = new ClientResponseDto(service.criar(dto));
+	public ResponseEntity<AgendamentoResponseDTO> criar(@PathVariable Long clienteId,
+			@Valid @RequestBody AgendamentoRequestDTO dto) {
+		AgendamentoResponseDTO response = new AgendamentoResponseDTO(service.criar(clienteId, dto));
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}").buildAndExpand(response.id()).toUri();
 		return ResponseEntity.created(location).body(response);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<ClientResponseDto> atualizar(@PathVariable Long id,
-			@Valid @RequestBody ClientRequestDto dto) {
-		return ResponseEntity.ok(new ClientResponseDto(service.atualizar(id, dto)));
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletar(@PathVariable Long id) {
-		service.deletar(id);
+	@DeleteMapping("/{agId}")
+	public ResponseEntity<Void> remover(@PathVariable Long clienteId, @PathVariable Long agId) {
+		service.remover(clienteId, agId);
 		return ResponseEntity.noContent().build();
 	}
 }

@@ -1,37 +1,44 @@
 package com.juniordev.metalmaster.entity;
 
-import com.juniordev.metalmaster.dto.ClientRequestDto;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 @Entity
-@Table(name = "Client")
-@Getter
+@Table(name = "agendamento")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class ClientEntity {
-	
-	public ClientEntity(ClientRequestDto client) {
-		super();
-		this.name = client.name();
-	}
+public class AgendamentoEntity {
 	
 	@Id
 	@GeneratedValue(strategy =  GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "name", nullable = false)
-	private String name;
+	
+	private String tecnico;
+	
+	private String descricao;
+	
+	private LocalDate data;
+	
+	private LocalTime hora;
+	
+	@ManyToOne
+	@JoinColumn(name = "cliente_id")
+	private ClienteEntity cliente;
 	
 }

@@ -1,5 +1,7 @@
 package com.juniordev.metalmaster.dto;
 
-public record ClientRequestDto(String name) {
+import jakarta.validation.constraints.NotBlank;
+
+public record ClientRequestDto(@NotBlank String cpf, @NotBlank String nome) {
 
 }

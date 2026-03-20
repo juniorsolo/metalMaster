@@ -10,54 +10,44 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.juniordev.metalmaster.dto.ClientRequestDto;
-import com.juniordev.metalmaster.dto.ClientResponseDto;
-import com.juniordev.metalmaster.service.ClienteService;
+import com.juniordev.metalmaster.dto.EnderecoRequestDTO;
+import com.juniordev.metalmaster.dto.EnderecoResponseDTO;
+import com.juniordev.metalmaster.service.EnderecoService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/clientes/{clienteId}/enderecos")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class ClientController {
+public class EnderecoController {
 
 	@Autowired
-	ClienteService service;
+	EnderecoService service;
 
 	@GetMapping
-	public ResponseEntity<List<ClientResponseDto>> listarTodos() {
-		List<ClientResponseDto> list = service.listarTodos().stream().map(ClientResponseDto::new).toList();
+	public ResponseEntity<List<EnderecoResponseDTO>> listar(@PathVariable Long clienteId) {
+		List<EnderecoResponseDTO> list = service.listarPorCliente(clienteId).stream()
+				.map(EnderecoResponseDTO::new).toList();
 		return ResponseEntity.ok(list);
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<ClientResponseDto> buscarPorId(@PathVariable Long id) {
-		return ResponseEntity.ok(new ClientResponseDto(service.buscarPorId(id)));
-	}
-
 	@PostMapping
-	public ResponseEntity<ClientResponseDto> criar(@Valid @RequestBody ClientRequestDto dto) {
-		ClientResponseDto response = new ClientResponseDto(service.criar(dto));
+	public ResponseEntity<EnderecoResponseDTO> adicionar(@PathVariable Long clienteId,
+			@Valid @RequestBody EnderecoRequestDTO dto) {
+		EnderecoResponseDTO response = new EnderecoResponseDTO(service.adicionar(clienteId, dto));
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}").buildAndExpand(response.id()).toUri();
 		return ResponseEntity.created(location).body(response);
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<ClientResponseDto> atualizar(@PathVariable Long id,
-			@Valid @RequestBody ClientRequestDto dto) {
-		return ResponseEntity.ok(new ClientResponseDto(service.atualizar(id, dto)));
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletar(@PathVariable Long id) {
-		service.deletar(id);
+	@DeleteMapping("/{endId}")
+	public ResponseEntity<Void> remover(@PathVariable Long clienteId, @PathVariable Long endId) {
+		service.remover(clienteId, endId);
 		return ResponseEntity.noContent().build();
 	}
 }

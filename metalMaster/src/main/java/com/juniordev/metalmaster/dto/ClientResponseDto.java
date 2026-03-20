@@ -1,10 +1,10 @@
 package com.juniordev.metalmaster.dto;
 
-import com.juniordev.metalmaster.entity.ClientEntity;
+import com.juniordev.metalmaster.entity.ClienteEntity;
 
-public record ClientResponseDto (Long id, String name){	
-	
-	public ClientResponseDto(ClientEntity client) {
-		this(client.getId(), client.getName());
+public record ClientResponseDto(Long id, String cpf, String nome) {
+
+	public ClientResponseDto(ClienteEntity c) {
+		this(c.getId(), c.getCpf(), c.getName());
 	}
 }
